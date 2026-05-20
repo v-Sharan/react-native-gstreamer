@@ -3,7 +3,6 @@ apply plugin: 'com.android.library'
 android {
     namespace "com.kalyzee.rctgstplayer"
     compileSdkVersion 36
-    ndkVersion "30.0.14904198"
 
     defaultConfig {
         minSdkVersion 24
