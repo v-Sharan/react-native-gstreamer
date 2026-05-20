@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useCallback, forwardRef, useImperativeHandle } from 'react'
-import { requireNativeComponent, UIManager, findNodeHandle, AppState, Platform, ViewPropTypes } from 'react-native'
+import { requireNativeComponent, UIManager, findNodeHandle, AppState, Platform, ViewPropTypes, Text, View } from 'react-native'
 import PropTypes from 'prop-types'
 
 export const GstState = {
@@ -16,29 +16,33 @@ const GstPlayer = forwardRef((props, ref) => {
     const appStateRef = useRef('active')
     const currentGstStateRef = useRef(undefined)
     const isInitializedRef = useRef(false)
+    const NATIVE_COMPONENT_NAME = 'RCTGstPlayer'
+    const isNativeAvailable = !!UIManager.getViewManagerConfig?.(NATIVE_COMPONENT_NAME) || !!UIManager[NATIVE_COMPONENT_NAME]
 
     const setGstState = useCallback((state) => {
         const handle = playerHandleRef.current
-        if (!handle) {
+        const commands = UIManager?.RCTGstPlayer?.Commands
+        if (!handle || !commands?.setState) {
             return
         }
 
         UIManager.dispatchViewManagerCommand(
             handle,
-            UIManager.RCTGstPlayer.Commands.setState,
+            commands.setState,
             [state]
         )
     }, [])
 
     const recreateView = useCallback(() => {
         const handle = playerHandleRef.current
-        if (!handle) {
+        const commands = UIManager?.RCTGstPlayer?.Commands
+        if (!handle || !commands?.recreateView) {
             return
         }
 
         UIManager.dispatchViewManagerCommand(
             handle,
-            UIManager.RCTGstPlayer.Commands.recreateView,
+            commands.recreateView,
             []
         )
     }, [])
@@ -122,6 +126,10 @@ const GstPlayer = forwardRef((props, ref) => {
     }), [setGstState, play, pause, stop, recreateView])
 
     useEffect(() => {
+        if (!isNativeAvailable) {
+            return undefined
+        }
+
         playerHandleRef.current = findNodeHandle(playerViewRef.current)
 
         const subscription = AppState.addEventListener?.('change', appStateChanged)
@@ -133,7 +141,18 @@ const GstPlayer = forwardRef((props, ref) => {
                 AppState.removeEventListener('change', appStateChanged)
             }
         }
-    }, [appStateChanged])
+    }, [appStateChanged, isNativeAvailable])
+
+    if (!isNativeAvailable) {
+        return (
+            <View style={props.style}>
+                <Text>
+                    react-native-gstreamer native module is not available. Expo Go does not include this native component.
+                    Use a custom dev client or EAS build with the native module linked.
+                </Text>
+            </View>
+        )
+    }
 
     return (
         <RCTGstPlayer

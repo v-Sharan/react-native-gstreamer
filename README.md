@@ -17,6 +17,8 @@ It handles everything GStreamer can natively handle. For more information, you c
 ## Installation
     npm install --save react-native-gstreamer
 
+> Expo note: this library includes native modules. To use it with Expo, build a custom client with EAS or a custom development client that includes the native module.
+
 ## How to link to your project
 <span style="color:red"><b>/!\ Be sure to read everything carefully : GStreamer is a  C Library. It will be necessary to finalize the linking manually.</b></span>
     
