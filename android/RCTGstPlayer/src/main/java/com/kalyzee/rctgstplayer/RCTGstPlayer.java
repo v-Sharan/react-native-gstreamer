@@ -43,8 +43,8 @@ public class RCTGstPlayer extends SimpleViewManager {
     }
 
     @Override
-    public void receiveCommand(View view, String commandType, @Nullable ReadableArray args) {  // ← FIXED int → String
-        if (commandType.equals(Command.setState))  // ← FIXED
+    public void receiveCommand(View view, String commandType, @Nullable ReadableArray args) {
+        if ("setState".equals(commandType))
             this.playerController.setRctGstState(args.getInt(0));
     }
 

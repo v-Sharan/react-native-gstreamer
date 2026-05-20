@@ -12,19 +12,15 @@ public enum Command {
         return index;
     }
 
-    // ← FIXED: added <> to avoid raw type warning
-    private static HashMap<String, Integer> commandMap = new HashMap<>();
+    private static HashMap<String, Integer> commandMap = new HashMap<>();  // ← only change
+
     public static Map<String, Integer> getCommandsMap() {
         return commandMap;
     }
 
-    // Kept for reference but no longer called (receiveCommand now uses String)
     public static boolean is(int commandType, Command command) {
         return Command.values()[commandType].getIndex() == command.getIndex();
     }
-
-    // String-based check — used by updated receiveCommand
-    public static final String setState = "setState";  // ← ADD this constant
 
     static {
         for (int i = 0; i < Command.values().length; i++) {
